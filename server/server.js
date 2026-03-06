@@ -13,7 +13,7 @@ const app = express();
 await connectDB();
 
 // Stripe Webhooks
-app.post('/api/stripe', express.raw({type: 'applicatoin/json'}), stripeWebhooks)
+app.post('/api/stripe', express.raw({type: 'application/json'}), stripeWebhooks)
 
 // Middleware
 app.use(express.json());
@@ -38,4 +38,10 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => { console.log(`Server running on port ${PORT}`) });
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+export default app;
