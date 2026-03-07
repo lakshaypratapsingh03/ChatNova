@@ -28,9 +28,9 @@ const plans = [
 // API Controller for getting all plans
 export const getPlans = async (req, res) => {
     try {
-        res.json({ sccess: true, plans })
+        res.json({ success: true, plans })
     } catch (error) {
-        res.json({ sccess: false, message: error.message })
+        res.json({ success: false, message: error.message })
     }
 }
 
