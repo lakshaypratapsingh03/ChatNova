@@ -6,7 +6,7 @@ import Community from './pages/community'
 import ChatBox from './components/Chatbox'
 import { assets } from './assets/assets'
 import './assets/prism.css'
-import Loading from './pages/Loading'
+import Loading from './pages/Loading.jsx'
 import { useAppContext } from './context/AppContext'
 import Login from './pages/login'
 
@@ -17,7 +17,7 @@ const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const {pathname} = useLocation()
 
-  if(pathname === '/loading') return <Loading/>
+  if(pathname === '/loading') return <Loading />
 
   return (
     <>
@@ -40,6 +40,7 @@ const App = () => {
             <Route path="/" element={<ChatBox />} />
             <Route path="/credits" element={<Credits />} />
             <Route path="/community" element={<Community />} />
+            
           </Routes>
         </div>
       </div>
