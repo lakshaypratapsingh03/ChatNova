@@ -40,7 +40,7 @@ const App = () => {
             <Route path="/" element={<ChatBox />} />
             <Route path="/credits" element={<Credits />} />
             <Route path="/community" element={<Community />} />
-            
+            <Route path="/loading" element={<Loading />} />
           </Routes>
         </div>
       </div>
