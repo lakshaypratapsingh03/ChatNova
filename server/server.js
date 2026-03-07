@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(cors());
 
 // Routes
-app.get('/', (req, res) => {res.send('server is Live!')})
+app.get('/', (req, res) => {res.send('Server is Live!')})
 app.use("/api/user", userRouter);
 app.use('/api/chat', chatRouter);
 app.use('/api/message', messageRouter)
