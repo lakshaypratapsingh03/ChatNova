@@ -74,13 +74,13 @@ export const loginUser = async (req, res) => {
             {
                 $project:{
                  _id: 0,
-                 imageUrl: "$messages,content",
-                 userName: $userName  
+                 imageUrl: "$messages.content",
+                 userName: "$userName"  
                 }
             }
         ])
 
-        res.json({sucess: true, images: publishedImageMessages.reverse()})
+        res.json({success: true, images: publishedImageMessages.reverse()})
     } catch (error){
         return res.json({success: false, message: error.message})
     }

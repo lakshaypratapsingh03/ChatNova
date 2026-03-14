@@ -9,7 +9,7 @@ import openai from "../configs/openai.js"
 export const textMessageController = async (req, res) => {
     try {
         const userId = req.user._id
-         
+
         // Check credits
         if (req.user.credits < 1) {
             return res.json({ success: false, message: "you don't have enough credits to use this feature" })
@@ -69,8 +69,16 @@ export const imageMessageController = async (req, res) => {
         // Construct Imagekit AI generation URL
         const generatedImageUrl = `${process.env.IMAGEKIT_URL_ENDPOINT}/ik-genimg-prompt-${encodePrompt}/ChatNova/${Date.now()}.png?tr=w-800,h-800`;
 
-        // Tigger generation by fetching from ImageKit
-        const aiImageResponse = await axios.get(generatedImageUrl, { responseType: "arraybuffer" })
+        // Trigger generation by fetching from ImageKit
+        const aiImageResponse = await axios.get(generatedImageUrl, {
+            responseType: "arraybuffer",
+            validateStatus: () => true
+        })
+
+        // If generation failed, stop here
+        if (aiImageResponse.status !== 200) {
+            throw new Error("Image generation failed. Please try again.")
+        }
 
         // Convert to Base64
         const base64Image = `data:image/png;base64,${Buffer.from(aiImageResponse.data, "binary").toString('base64')}`;
@@ -99,6 +107,6 @@ export const imageMessageController = async (req, res) => {
 
 
     } catch (error) {
-        res.json({ success: false, message: error.message});
+        res.json({ success: false, message: error.message });
     }
 }

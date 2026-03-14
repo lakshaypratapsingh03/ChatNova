@@ -1,4 +1,3 @@
-
 import logo from "./logo.png";
 import logo_full from "./logo_full.png";
 import logo_full_dark from "./logo_full_dark.png";
@@ -14,6 +13,7 @@ import bin_icon from "./bin_icon.svg";
 import logout_icon from "./logout_icon.svg";
 import diamond_icon from "./diamond_icon.svg";
 import gallery_icon from "./gallery_icon.svg";
+import mic_icon from "./mic.png";
 
 import ai_image1 from "./ai_image1.jpg";
 import ai_image2 from "./ai_image2.jpg";
@@ -42,7 +42,8 @@ export const assets = {
     logout_icon,
     logo_full_dark,
     diamond_icon,
-    gallery_icon
+    gallery_icon,
+    mic_icon
 };
 
 export const dummyUserData = {

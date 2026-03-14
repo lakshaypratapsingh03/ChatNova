@@ -1,26 +1,30 @@
 import React, { useState } from 'react'
-import Sidebar from './components/Sidebar'
+import Sidebar from './components/Sidebar.jsx'
 import { Route, Routes, useLocation } from 'react-router-dom'
-import Credits from './pages/Credits'
-import Community from './pages/community'
-import ChatBox from './components/Chatbox'
-import { assets } from './assets/assets'
+import Credits from './pages/Credits.jsx'
+import Community from './pages/Community.jsx'
+import ChatBox from './components/ChatBox.jsx'
+import { assets } from './assets/assets.js'
 import './assets/prism.css'
 import Loading from './pages/Loading.jsx'
-import { useAppContext } from './context/AppContext'
-import Login from './pages/login'
+import { useAppContext } from './context/AppContext.jsx'
+import Login from './pages/Login.jsx'
+import {Toaster} from 'react-hot-toast'
+import "prismjs/themes/prism.css"
+import "prismjs/themes/prism-tomorrow.css"
 
 const App = () => {
 
-  const {user} = useAppContext()
+  const {user, loadingUser} = useAppContext()
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const {pathname} = useLocation()
 
-  if(pathname === '/loading') return <Loading />
+  if(pathname === '/loading' || loadingUser) return <Loading />
 
   return (
     <>
+    <Toaster />
       {!isMenuOpen && <img src={assets.menu_icon} className='absolute top-3 left-3 w-8 h-8 cursor-pointer md:hidden not-dark:invert' onClick={() => setIsMenuOpen(true)} />}
       
     {user ? (

@@ -6,7 +6,7 @@ const userRouter = express.Router();
 
 userRouter.post("/register", registerUser);
 userRouter.post("/login", loginUser);
-userRouter.post("/data", protect, getUser);
-userRouter.post("/published-images", getPublishedImages);
+userRouter.get("/data", protect, getUser);
+userRouter.get("/published-images", getPublishedImages);
 
 export default userRouter;
