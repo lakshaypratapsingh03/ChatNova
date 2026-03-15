@@ -8,37 +8,49 @@ import openai from "../configs/openai.js"
 // Text AI Chat Message Controller
 export const textMessageController = async (req, res) => {
     try {
-        const userId = req.user._id
+        const userId = req.user._id;
+        const { chatId, prompt } = req.body;
 
-        // Check credits
+        
+
         if (req.user.credits < 1) {
-            return res.json({ success: false, message: "you don't have enough credits to use this feature" })
+            return res.json({ success: false, message: "You don't have enough credits." });
         }
 
-        const { chatId, prompt } = req.body
+        const chat = await Chat.findOne({ userId, _id: chatId });
+        if (!chat) return res.json({ success: false, message: "Chat not found" });
 
-        const chat = await Chat.findOne({ userId, _id: chatId })
-        chat.messages.push({ role: "user", content: prompt, timestamp: Date.now(), isImage: false })
+        // Add user message to DB
+        chat.messages.push({ role: "user", content: prompt, timestamp: Date.now(), isImage: false });
 
-        const { choices } = await openai.chat.completions.create({
-            model: "gemini-3-flash-preview",
-            messages: [
-                {
-                    role: "user",
-                    content: prompt,
-                },
-            ],
+        // CALL THE API WITH CORRECT MODEL
+        const {choices} = await openai.chat.completions.create({
+            model: "gemini-3-flash-preview", 
+            messages: [{ role: "user", content: prompt }],
         });
 
-        const reply = { ...choices[0].message, timestamp: Date.now(), isImage: false }
-        res.json({ success: true, reply })
+        const reply = {...choices[0].message, timestamp: Date.now(), isImage: false}
 
-        chat.messages.push(reply)
-        await chat.save()
-        await User.updateOne({ _id: userId }, { $inc: { credits: -1 } })
+        // Send response to frontend
+        res.json({ success: true, reply });
+
+        // Save to Database 
+        chat.messages.push(reply);
+        await chat.save();
+        await User.updateOne({ _id: userId }, { $inc: { credits: -1 } });
 
     } catch (error) {
-        res.json({ success: false, message: error.message })
+        console.error("API ERROR:", error);
+        
+        // Handle the 429 specifically
+        if (error.status === 429) {
+            return res.json({ 
+                success: false, 
+                message: "Gemini Free Tier limit reached. Please wait 60 seconds." 
+            });
+        }
+
+        res.json({ success: false, message: error.message });
     }
 }
 

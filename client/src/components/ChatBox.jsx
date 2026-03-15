@@ -13,7 +13,7 @@ const Chatbox = () => {
   const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(false)
   const [listening, setListening] = useState(false)
-  const [showScrollButton, setShowScrollButton] = useState(false)
+ 
 
   const [prompt, setPrompt] = useState('')
   const [mode, setMode] = useState('text')
@@ -21,53 +21,6 @@ const Chatbox = () => {
 
 
 
-  // regenerate function //
-  const regenerateResponse = async (index) => {
-  try {
-
-    // find the user prompt just before this AI message
-    const userMessage = messages[index - 1]
-
-    if (!userMessage || userMessage.role !== "user") return
-
-    setLoading(true)
-
-    const { data } = await axios.post(
-      `/api/message/${mode}`,
-      {
-        chatId: selectedChat._id,
-        prompt: userMessage.content,
-        isPublished
-      },
-      {
-        headers: { Authorization: token }
-      }
-    )
-
-    if (data.success) {
-
-      setMessages(prev => {
-        const updated = [...prev]
-
-        // replace only this assistant message
-        updated[index] = {
-          ...data.reply,
-          timestamp: Date.now()
-        }
-
-        return updated
-      })
-
-    } else {
-      toast.error(data.message)
-    }
-
-  } catch (error) {
-    toast.error(error.message)
-  } finally {
-    setLoading(false)
-  }
-}
 
   // mic voive input //
   const startVoiceInput = () => {
@@ -152,20 +105,7 @@ const Chatbox = () => {
   }, [messages])
 
 
-  useEffect(() => {
-    const container = containerRef.current
-
-    const handleScroll = () => {
-      const isAtBottom =
-        container.scrollHeight - container.scrollTop <= container.clientHeight + 50
-
-      setShowScrollButton(!isAtBottom)
-    }
-
-    container?.addEventListener("scroll", handleScroll)
-
-    return () => container?.removeEventListener("scroll", handleScroll)
-  }, [])
+  
 
   return (
     <div className='flex-1 flex flex-col justify-between m-5 md:m-10 xl:mx-30 max-md:mt-14 2xl:pr-40'>
@@ -179,15 +119,7 @@ const Chatbox = () => {
           </div>
         )}
 
-        {messages.map((message, index) => (
-  <Message
-    key={index}
-    message={message}
-    index={index}
-    setPrompt={setPrompt}
-    regenerate={regenerateResponse}
-  />
-))}
+        {messages?.map((message, index) => (<Message key={index} message={message} setPrompt={setPrompt}/>))}
 
         {/* Three Dots Loading*/}
         {
