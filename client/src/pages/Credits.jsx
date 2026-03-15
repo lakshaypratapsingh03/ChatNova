@@ -49,7 +49,7 @@ useEffect(() => {
 
       <div className='flex flex-wrap justify-center gap-8'>
         {plans.map((plan,) => (
-          <div key={plan._id} className={`border border-gray-200 dark:border-purple-700 rounded-lg shadow hover:shadow-lg transition-shadow p-6 min-w-[300px] flex flex-col ${plan._id === "pro" ? "bg-purple-50 dark:bg-transparent" : "bg-white dark:bg-transparent"} `}>
+          <div key={plan._id} className={`border border-gray-200 dark:border-purple-700 rounded-lg shadow hover:shadow-lg transition-shadow p-6 min-w-[300px] flex flex-col ${plan._id === "pro" ? "bg-white dark:bg-transparent" : "bg-white dark:bg-transparent"} `}>
             <div className='flex-1'>
               <h3 className='text-xl font-semibold text-gray-900 dark:text-white mb-2'>{plan.name}</h3>
               <p className='text-2xl font-bold text-purple-700 dark:text-purple-200 mb-4'>${plan.price}
