@@ -12,6 +12,7 @@ import Login from './pages/Login.jsx'
 import {Toaster} from 'react-hot-toast'
 import "prismjs/themes/prism.css"
 import "prismjs/themes/prism-tomorrow.css"
+import ForgotPassword from "./pages/ForgotPassword.jsx";
 
 const App = () => {
 
@@ -45,13 +46,19 @@ const App = () => {
             <Route path="/credits" element={<Credits />} />
             <Route path="/community" element={<Community />} />
             <Route path="/loading" element={<Loading />} />
+           
           </Routes>
         </div>
       </div>
     ): (
       <div className='bg-gradient-to-b from-[#242124] to-[#000000] flex items-center justify-center h-screen w-screen'>
-        <Login/>
-      </div>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="*" element={<Login />} />
+    </Routes>
+  </div>
+
     )}
     </>
   )

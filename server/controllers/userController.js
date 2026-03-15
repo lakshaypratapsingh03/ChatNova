@@ -1,7 +1,9 @@
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import Chat from "../models/Chat.js"
+import Chat from "../models/Chat.js";
+import crypto from "crypto";
+import nodemailer from "nodemailer";
 
 //Generate JWT
 const generateToken = (id) => {
@@ -18,7 +20,7 @@ export const registerUser = async (req, res) => {
         }
 
         const user = await User.create({ name, email, password })
-        
+
         const token = generateToken(user._id);
         res.json({ success: true, token });
     } catch (error) {
@@ -26,7 +28,7 @@ export const registerUser = async (req, res) => {
     }
 }
 
-// API to login a user
+// API to login a user //
 export const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
@@ -38,33 +40,33 @@ export const loginUser = async (req, res) => {
 
             if (isMatch) {
                 const token = generateToken(user._id);
-                // return immediately to prevent further response
+                // return immediately to prevent further response //
                 return res.json({ success: true, token });
             }
         }
 
-        // if we reach here, either user wasn't found or password mismatched
-        return res.json({ success: false, message: "Invalid email or password" });    
+        // if we reach here, either user wasn't found or password mismatched //
+        return res.json({ success: false, message: "Invalid email or password" });
     } catch (error) {
         return res.json({ success: false, message: error.message });
     }
 }
 
- // API to get user data
- export const getUser = async (req, res) => {
+// API to get user data //
+export const getUser = async (req, res) => {
     try {
         const user = req.user;
-       return res.json({ success: true, user });
+        return res.json({ success: true, user });
     } catch (error) {
         return res.json({ success: false, message: error.message });
-    }   
- }
+    }
+}
 
- // API to get published images
- export const getPublishedImages = async (req, res) => {
-    try{
+// API to get published images //
+export const getPublishedImages = async (req, res) => {
+    try {
         const publishedImageMessages = await Chat.aggregate([
-            {$unwind: "$messages"},
+            { $unwind: "$messages" },
             {
                 $match: {
                     "messages.isImage": true,
@@ -72,16 +74,61 @@ export const loginUser = async (req, res) => {
                 }
             },
             {
-                $project:{
-                 _id: 0,
-                 imageUrl: "$messages.content",
-                 userName: "$userName"  
+                $project: {
+                    _id: 0,
+                    imageUrl: "$messages.content",
+                    userName: "$userName"
                 }
             }
         ])
 
-        res.json({success: true, images: publishedImageMessages.reverse()})
-    } catch (error){
-        return res.json({success: false, message: error.message})
+        res.json({ success: true, images: publishedImageMessages.reverse() })
+    } catch (error) {
+        return res.json({ success: false, message: error.message })
     }
- }
+}
+
+// API to get forgotpassword //
+
+export const forgotPassword = async (req, res) => {
+
+    try {
+
+        const { email } = req.body;
+
+        const user = await User.findOne({ email })
+
+        if (!user) {
+            return res.json({ success: false, message: "User not found" })
+        }
+
+        const token = crypto.randomBytes(32).toString("hex")
+
+        user.resetToken = token
+        user.resetTokenExpire = Date.now() + 15 * 60 * 1000
+
+        await user.save()
+
+        const resetLink = `http://localhost:5173/reset-password/${token}`
+
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.EMAIL,
+                pass: process.env.EMAIL_PASS
+            }
+        })
+
+        await transporter.sendMail({
+            to: user.email,
+            subject: "Reset Password",
+            html: `Click here to reset password <a href="${resetLink}">Reset</a>`
+        })
+
+        res.json({ success: true })
+
+    } catch (error) {
+        res.json({ success: false, message: error.message })
+    }
+
+}
