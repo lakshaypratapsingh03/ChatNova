@@ -24,3 +24,75 @@
 .loder div:nth-last-child(3){
     animation-delay: 0.4s;
 }
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+.chat-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  line-height: 1.8;
+  color: #e5e7eb;
+}
+
+/* HEADINGS  */
+.chat-text h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.chat-text h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 14px;
+  margin-bottom: 6px;
+}
+
+.chat-text h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 12px;
+  margin-bottom: 6px;
+}
+
+/* PARAGRAPH */
+.chat-text p {
+  margin-bottom: 10px;
+}
+
+/* LISTS */
+.chat-text ul {
+  padding-left: 18px;
+  margin-bottom: 10px;
+}
+
+.chat-text li {
+  margin-bottom: 6px;
+}
+
+/* BOLD */
+.chat-text strong {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* CODE */
+.chat-text code {
+  background: #1f2937;
+  padding: 3px 6px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #22c55e;
+}
+
+/* CODE BLOCK */
+.chat-text pre {
+  background: #0f172a;
+  padding: 12px;
+  border-radius: 10px;
+  overflow-x: auto;
+  margin-bottom: 10px;
+}

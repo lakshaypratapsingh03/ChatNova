@@ -1,23 +1,25 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAppContext } from '../context/AppContext.jsx'
 import { assets } from '../assets/assets'
 import Message from './Message.jsx'
 import toast from "react-hot-toast"
 
+
 const Chatbox = () => {
 
   const containerRef = useRef(null)
+  
 
   const { selectedChat, theme, user, axios, token, setUser } = useAppContext()
 
   const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(false)
   const [listening, setListening] = useState(false)
- 
+
 
   const [prompt, setPrompt] = useState('')
   const [mode, setMode] = useState('text')
-  const [isPublished, setIsPublished] = useState(false)
+
 
 
 
@@ -53,11 +55,12 @@ const Chatbox = () => {
   }
 
 
- 
-
+  
 
 
   const onSubmit = async (e) => {
+
+    if (loading) return;
 
     try {
       e.preventDefault()
@@ -65,14 +68,16 @@ const Chatbox = () => {
       setLoading(true)
       const promptCopy = prompt
       setPrompt('')
-      setMessages(prev => [...prev, { role: 'user', content: prompt, timestamp: Date.now(), isImage: false }])
+      setMessages(prev => [...prev, { role: 'user', content: prompt, timestamp: Date.now(), }])
 
-      const { data } = await axios.post(`/api/message/${mode}`, { chatId: selectedChat._id, prompt, isPublished }, { headers: { Authorization: token } })
+      const apiRoute = mode === "text" || mode === "quiz" ? "text" : mode;
+
+      const { data } = await axios.post(`/api/message/${apiRoute}`, { chatId: selectedChat._id, prompt, task: mode }, { headers: { Authorization: token } })
 
       if (data.success) {
         setMessages(prev => [...prev, data.reply])
         //decrease credits
-        if (mode === 'image') {
+        if (mode === 'text') {
           setUser(prev => ({ ...prev, credits: prev.credits - 2 }))
         } else {
           setUser(prev => ({ ...prev, credits: prev.credits - 1 }))
@@ -105,7 +110,7 @@ const Chatbox = () => {
   }, [messages])
 
 
-  
+
 
   return (
     <div className='flex-1 flex flex-col justify-between m-5 md:m-10 xl:mx-30 max-md:mt-14 2xl:pr-40'>
@@ -119,7 +124,7 @@ const Chatbox = () => {
           </div>
         )}
 
-        {messages?.map((message, index) => (<Message key={index} message={message} setPrompt={setPrompt}/>))}
+        {messages?.map((message, index) => (<Message key={index} message={message} setPrompt={setPrompt} />))}
 
         {/* Three Dots Loading*/}
         {
@@ -131,19 +136,19 @@ const Chatbox = () => {
         }
       </div>
 
-      {mode === 'image' && (
-        <label className='inline-flex items gap-2 mb-3 text-sm mx-auto'>
-          <p className='text-xs'>Publish Generated Image to Community</p>
-          <input type="checkbox" className='cursor-pointer' checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} />
-        </label>
-      )}
 
       {/* Prompt Input Box */}
       <form onSubmit={onSubmit} className='bg-primary/20 dark:bg-[#583C79]/30 border border-primary dark:border-[#80609F]/30 rounded-full w-full max-w-2xl p-3 pl-4 mx-auto flex gap-4 items-center'>
-        <select onChange={(e) => setMode(e.target.value)} value={mode} className='text-sm pl-3 pr-2 outline-none'>
-          <option className='dark:bg-purple-900' value="text">Text</option>
-          <option className='dark:bg-purple-900' value="image">Image</option>
+        <select value={mode}
+          onChange={(e) => {
+            setMode(e.target.value);
+          }}
+          className='text-sm pl-3 pr-2 outline-none'>
+          <option className='dark:bg-purple-900' value="text">Chat</option>
+          <option value="quiz">Generate Quiz</option>
+
         </select>
+
         <input value={prompt || ""} onChange={(e) => setPrompt(e.target.value)} type="text" placeholder='Type your prompt here...' className='flex-1 w-full text-sm outline-none' required />
         <button type="button" onClick={startVoiceInput} className="cursor-pointer">
           <img src={assets.mic_icon} className={`w-7 dark:invert hover:scale-110 transition ${listening ? "animate-pulse" : ""}`} alt="mic" />

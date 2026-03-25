@@ -1,7 +1,6 @@
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import Chat from "../models/Chat.js";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
 
@@ -52,6 +51,8 @@ export const loginUser = async (req, res) => {
     }
 }
 
+
+
 // API to get user data //
 export const getUser = async (req, res) => {
     try {
@@ -62,31 +63,7 @@ export const getUser = async (req, res) => {
     }
 }
 
-// API to get published images //
-export const getPublishedImages = async (req, res) => {
-    try {
-        const publishedImageMessages = await Chat.aggregate([
-            { $unwind: "$messages" },
-            {
-                $match: {
-                    "messages.isImage": true,
-                    "messages.isPublished": true,
-                }
-            },
-            {
-                $project: {
-                    _id: 0,
-                    imageUrl: "$messages.content",
-                    userName: "$userName"
-                }
-            }
-        ])
 
-        res.json({ success: true, images: publishedImageMessages.reverse() })
-    } catch (error) {
-        return res.json({ success: false, message: error.message })
-    }
-}
 
 // API to get forgotpassword //
 
@@ -132,3 +109,36 @@ export const forgotPassword = async (req, res) => {
     }
 
 }
+
+// API for Google Login
+export const googleLogin = async (req, res) => {
+    try {
+        const { name, email } = req.body;
+
+        let user = await User.findOne({ email });
+
+        // If user does not exist → create new user
+        if (!user) {
+            user = await User.create({
+                name,
+                email,
+                password: "google_auth"
+            });
+        }
+
+        // Generate token
+        const token = generateToken(user._id);
+
+        res.json({
+            success: true,
+            token,
+            user
+        });
+
+    } catch (error) {
+        res.json({
+            success: false,
+            message: error.message
+        });
+    }
+};

@@ -1,8 +1,7 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Sidebar from './components/Sidebar.jsx'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import Credits from './pages/Credits.jsx'
-import Community from './pages/Community.jsx'
 import ChatBox from './components/ChatBox.jsx'
 import { assets } from './assets/assets.js'
 import './assets/prism.css'
@@ -44,7 +43,6 @@ const App = () => {
           <Routes>
             <Route path="/" element={<ChatBox />} />
             <Route path="/credits" element={<Credits />} />
-            <Route path="/community" element={<Community />} />
             <Route path="/loading" element={<Loading />} />
            
           </Routes>

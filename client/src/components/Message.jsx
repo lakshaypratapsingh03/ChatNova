@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { assets } from "../assets/assets"
 import moment from "moment"
 import ReactMarkdown from "react-markdown"
 import rehypeHighlight from "rehype-highlight"
 import Prism from "prismjs"
 import toast from "react-hot-toast"
-import { Copy, Pencil, Send,  } from "lucide-react";
+import { Copy, Pencil, Send, } from "lucide-react";
+import remarkGfm from "remark-gfm";
 
-const Message = ({ message, setPrompt, }) => {
+const Message = ({ message }) => {
   const [editing, setEditing] = useState(false)
   const [editedText, setEditedText] = useState(message.content)
 
@@ -30,7 +31,7 @@ const Message = ({ message, setPrompt, }) => {
     toast.success("Copied")
   }
 
-  /* ---------- EDIT USER MESSAGE ---------- */
+
 
 
 
@@ -65,50 +66,44 @@ const Message = ({ message, setPrompt, }) => {
 
               )}
 
-              {message.image && (
-                <img
-                  src={message.image}
-                  alt=""
-                  className="max-w-xs rounded-md"
-                />
-              )}
-   {editing && (
-              <div className="flex gap-2 mt-2 text-xs">
-                <button
-                  onClick={() => {
-                    message.content = editedText
-                    setEditing(false)
-                  }}
-                  className="text-green-500"
-                >
-                  <Send size={15} />
-                </button>
+              
+              {editing && (
+                <div className="flex gap-2 mt-2 text-xs">
+                  <button
+                    onClick={() => {
+                      message.content = editedText
+                      setEditing(false)
+                    }}
+                    className="text-green-500"
+                  >
+                    <Send size={15} />
+                  </button>
 
-                <button
-                  onClick={() => setEditing(false)}
-                  className="text-red-500"
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
+                  <button
+                    onClick={() => setEditing(false)}
+                    className="text-red-500"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
 
 
             </div>
-           
+
 
             {/* Hover Buttons */}
             <div className="absolute -bottom-5 right-2 flex gap-3 text-xs opacity-0 group-hover:opacity-100 transition">
 
-             <button onClick={copyMessage}>
+              <button onClick={copyMessage}>
                 <Copy size={16} />
               </button>
 
-               <button
+              <button
                 onClick={() => setEditing(true)}
                 className="hover:underline"
               >
-              <Pencil size={16}/> 
+                <Pencil size={16} />
               </button>
 
 
@@ -126,32 +121,41 @@ const Message = ({ message, setPrompt, }) => {
         <div className="flex items-start gap-2 my-4 group">
 
           <img
-            src={assets.logo_icon}
+            src={assets.logo}
             className="w-4 rounded-full"
             alt=""
           />
 
-          <div className="bg-primary/20 dark:bg-[#57317C]/30 border border-[#80609F]/30 px-4 py-2 rounded-2xl max-w-[60%] text-sm">
+          <div className="bg-primary/20 dark:bg-[#57317C]/30 border border-[#80609F]/30 px-4 py-3 rounded-2xl max-w-[60%] text-sm leading-7">
 
-            {message.isImage ? (
-
-              <img
-                src={message.content}
-                alt=""
-                className="w-full max-w-md rounded-md"
-              />
-
-            ) : (
-
+          
               <div className="text-sm dark:text-primary reset-tw">
 
-                <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeHighlight]}
+                  components={{
+                    h1: (props) => <h1 className="text-xl font-bold mt-4 mb-2" {...props} />,
+                    h2: (props) => <h2 className="text-lg font-semibold mt-3 mb-2" {...props} />,
+                    h3: (props) => <h3 className="text-base font-semibold mt-2 mb-1" {...props} />,
+                    p: (props) => <p className="mb-2 leading-7" {...props} />,
+                    ul: (props) => <ul className="list-disc pl-5 mb-2" {...props} />,
+                    li: (props) => <li className="mb-1" {...props} />,
+                    strong: (props) => <strong className="font-semibold text-white" {...props} />,
+                    code: ({ inline, ...props }) =>
+                      inline ? (
+                        <code className="bg-gray-800 px-1 py-0.5 rounded text-green-400 text-sm" {...props} />
+                      ) : (
+                        <code className="block bg-[#0f172a] p-3 rounded-lg text-sm overflow-x-auto" {...props} />
+                      )
+                  }}
+                >
                   {message.content || ""}
                 </ReactMarkdown>
 
               </div>
 
-            )}
+            
 
             <div className="flex items-center gap-3 text-xs opacity-0 group-hover:opacity-100 transition duration-200">
 
