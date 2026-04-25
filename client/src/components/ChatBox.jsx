@@ -145,7 +145,7 @@ const Chatbox = () => {
           }}
           className='text-sm pl-3 pr-2 outline-none'>
           <option className='dark:bg-purple-900' value="text">Chat</option>
-          <option value="quiz">Generate Quiz</option>
+          <option className='dark:bg-purple-900' value="quiz">Generate Quiz</option>
 
         </select>
 
